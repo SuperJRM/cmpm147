@@ -59,7 +59,6 @@ function setup() {
   });
   resizeScreen();
 
-  createCanvas(800, 800);
   background(21, 0, 63);
   stroke(255);
   noFill();
