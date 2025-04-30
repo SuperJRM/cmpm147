@@ -2,7 +2,7 @@
 <html>
 <head>
 	<!-- This title is used for tabs and bookmarks -->
-	<title>Experiment 3B - Alternate Worlds</title>
+	<title>Experiment 4A - Infinite Worlds</title>
 
 	<!-- Use UTF character set, a good idea with any webpage -->
 	<meta charset="UTF-8" />
@@ -32,16 +32,9 @@
 	<main id="content">
 		<section>
 
-			<h1>Experiment 3B - Alternate Worlds</h1>
+			<h1>Experiment 4A - Infinite Worlds</h1>
 
 			<div class="minor-section">
-				<button id="reseedButton">
-					reseed
-				  </button>
-				  <span id="seedReport"></span>
-				  <hr />
-				  <span id="canvasContainer" style="margin: 10px;"></span>
-				  <textarea cols="20" rows="20" id="asciiBox" style="opacity: 0.5; letter-spacing: 1ex; width: 320px; margin: 10px; font-family: monospace;"></textarea>
 				<div id="canvas-container">
 					<!-- canvas will be added here -->
 				</div>
@@ -49,16 +42,21 @@
                     <button id="fullscreen">Fullscreen</button>
                 </div>
 			</div>
+			<nav id="links" class="minor-section">
+				<!-- Put link back to homepage here. -->
+				<ul>
+					<li><a href="experiment4b\index.html">Experiment 4B</a></li>
+				</ul>
+			</nav>
 
 			<div class="minor-section">
 				<h2>Description</h2>
 				<p>Description: One of two generators, the worlds they generate are meant to mimic that of old Pokemon games, specifically Gold and Silver.
-					This world uses a bright color palette, similar to those used to counter a dim Gameboy screen, and a translucent screen to mimic the darkness 
-					of the caves within Pokemon.
+					This world uses a bright color palette, similar to those used to counter a dim Gameboy screen, to bring a spring, and maybe even winter, scene to life.
 					
-						--Codes:-- _ places down wall/high ground tiles, : places pillars, and w creates ground tiles.
+						--Codes:-- _ places down ground tiles, : places trees, and w creates tiles of water.
 					
-						--Life:-- In this world, random doors must be sought, with your mouse's new spotlight coming in handy.
+						--Life:-- In this world, streams and ponds move gently during the spring, with winter bringing the fall of powdered snow.
 					
 						(using tiles from [Micro Tileset - Overworld & Dungeon](https://thkaspar.itch.io/micro-tileset-overworld-dungeon) by [thkaspar](https://thkaspar.itch.io/))
 					</p>
@@ -66,8 +64,9 @@
 
 			<div class="minor-section">
 				<h2>Technical</h2>
-				<p>Autotiling was used to place down appropriate sprites, with noise randomizing which tiles were used. Shapes and color values create a dimmer and spotlight overlay, 
-					which follows the mouse and its position.</p>
+				<p>Autotiling was used to place down appropriate sprites, with noise randomizing which tiles were used. The water and snow use time passed to change sprites
+					per second passed, mimicking animation.
+				</p>
 			</div>
 
 			<div class="minor-section">
@@ -88,7 +87,7 @@
 		<nav id="links" class="minor-section">
 			<!-- Put link back to homepage here. -->
             <ul>
-                <li><a href="experiment3a\index.html">Home</a></li>
+                <li><a href="../index.html">Home</a></li>
             </ul>
 		</nav>
 	</main>
