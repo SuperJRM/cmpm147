@@ -22,9 +22,8 @@
 
 	<!-- Link to javascript files - DEFER waits until all elements are rendered -->
     <script type="text/javascript" src="../js/site.js" DEFER></script>
-	<!-- Use me for a JavaScript OOP Project -->
+	<script type="text/javascript" src="./js/xxhash.min.js" defer></script>
 	<script type="text/javascript" src="./js/project.js" DEFER></script>
-	<!-- Use me for a p5.js project -->
 	<script type="text/javascript" src="./js/sketch.js" DEFER></script>
 </head>
 <body>
@@ -38,7 +37,13 @@
 				<div id="canvas-container">
 					<!-- canvas will be added here -->
 				</div>
-                <div class="fullscreen-box">
+                <div class="fullscreen-box instructions">
+                    <div>
+                        Use the arrow keys to around the firey terrain. Click on tiles to dig for treasure or turn the lava into solid rock!
+                    </div>
+                    <div>
+                        World seed: <input type="text" id="world-seed" value="xyzzy">
+                    </div>
                     <button id="fullscreen">Fullscreen</button>
                 </div>
 			</div>
@@ -50,35 +55,25 @@
 			</nav>
 			<div class="minor-section">
 				<h2>Description</h2>
-				<p>Description: One of two generators, the worlds they generate are meant to mimic that of old Pokemon games, specifically Gold and Silver.
-					This world uses a bright color palette, similar to those used to counter a dim Gameboy screen, to bring a spring, and maybe even winter, scene to life.
-					
-						--Codes:-- _ places down ground tiles, : places trees, and w creates tiles of water.
-					
-						--Life:-- In this world, streams and ponds move gently during the spring, with winter bringing the fall of powdered snow.
-					
-						(using tiles from [Micro Tileset - Overworld & Dungeon](https://thkaspar.itch.io/micro-tileset-overworld-dungeon) by [thkaspar](https://thkaspar.itch.io/))
+				<p>Generates an infinitely explorable world of magma and lava rocks. Search for treasure by clicking on land tiles, and craft paths through the fiery oceans by clicking on lava tiles.
 					</p>
 			</div>
 
 			<div class="minor-section">
-				<h2>Technical</h2>
-				<p>Autotiling was used to place down appropriate sprites, with noise randomizing which tiles were used. The water and snow use time passed to change sprites
-					per second passed, mimicking animation.
+				<h2>Technical Description</h2>
+				<p>We used the XXH32 hashing function, as well as p5.js's built-in noiseSeed and randomSeed methods, to generate the placement of various types of tiles over a grid. Depending on the values generated, the tiles will either take the form of a terrain tile or a shade of lava, with the potential of for a wave forming. Clicking the land will alter its appearance and have a cance to spawn a gold coin. By placing these features within an infinitely generated landscape, not only will each user's journey be different depending on where they go, but also the seed their world is built from, making for a truly infinite world.
 				</p>
 			</div>
 
 			<div class="minor-section">
-				<h2>Reflection</h2>
-				<p>Working on the project alone, I found building the generators to be a very fun experience.
-					Having grown up with sprite based games, I thought it was really cool to actually make some
-					kind of homage to them in a way. For that reason, I feel that the highs of the project definitely
-					came from seeing everything in action. However, there were a lot of lows that came from
-					technical issues. On top of the usual slew of bugs, I also had to deal with the constant crashing of
-					Glitch during certain periods, where the site would break whenever any changes were made to
-					the code. I also had an incredibly difficult time with fitting both generators into one portfolio
-					page, to the point where I eventually gave up and just split the two. Overall, though, I am glad I
-					was able to create something I am proud of, and that I was able to learn so much about autotiling!
+				<h2>Artist Statement</h2>
+				<p>Infinity: We used the infinite extent of the world to represent an endless landscape of lava and magma, similar to the fictional final worlds of video games, like Super Mario Sunshine.
+
+					Variation in Space: As the audience browses the world, they’ll see numerous islands of varying shapes and sizes. volcanic rock and bubbling magma surround each land mass, with the larger islands having firmer ground like the platforms of a game's level. Black ports invite voyagers to board these small worlds and find respite, as well as possibly search for treasure.
+					
+					Variations in Key: Different worlds will have different islands to explore, with new variations of land and lava waves.
+					
+					Signs of Life: Clicking tiles allows adventurers to dig for treasure or turn the lava into solid rock. During their search, the passage of time shifts the colors of the lava, giving a glowing effect, and bring about waves that lap at the land.
 					</p>
 			</div>
 

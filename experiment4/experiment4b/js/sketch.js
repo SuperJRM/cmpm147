@@ -1,223 +1,244 @@
-// sketch.js - purpose and description here
-// Author: Your Name
-// Date:
+"use strict";
 
-// Here is how you might set up an OOP p5.js project
-// Note that p5.js looks for a file called sketch.js
+/* global XXH */
+/* exported --
+    p3_preload
+    p3_setup
+    p3_worldKeyChanged
+    p3_tileWidth
+    p3_tileHeight
+    p3_tileClicked
+    p3_drawBefore
+    p3_drawTile
+    p3_drawSelectedTile
+    p3_drawAfter
+*/
 
-// Constants - User-servicable parts
-// In a longer project I like to put these in a separate file
-const VALUE1 = 1;
-const VALUE2 = 2;
+function p3_preload() {}
 
-// Globals
-let myInstance;
-let canvasContainer;
-var centerHorz, centerVert;
-let seed = 0;
-let tilesetImage;
-let currentGrid = [];
-let numRows, numCols;
+function p3_setup() {}
 
-class MyClass {
-    constructor(param1, param2) {
-        this.property1 = param1;
-        this.property2 = param2;
-    }
+let worldSeed;
 
-    myMethod() {
-        // code to run when method is called
-    }
+function p3_worldKeyChanged(key) {
+  worldSeed = XXH.h32(key, 0);
+  noiseSeed(worldSeed);
+  randomSeed(worldSeed);
 }
 
-function resizeScreen() {
-  centerHorz = canvasContainer.width() / 2; // Adjusted for drawing logic
-  centerVert = canvasContainer.height() / 2; // Adjusted for drawing logic
-  console.log("Resizing...");
-  resizeCanvas(canvasContainer.width(), canvasContainer.height());
-  // redrawCanvas(); // Redraw everything based on new size
+function p3_tileWidth() {
+  return 32;
+}
+function p3_tileHeight() {
+  return 16;
 }
 
-function preload() {
-  tilesetImage = loadImage(
-    "https://cdn.glitch.com/25101045-29e2-407a-894c-e0243cd8c7c6%2FtilesetP8.png?v=1611654020438"
-  );
-}
+let [tw, th] = [p3_tileWidth(), p3_tileHeight()];
 
-function reseed() {
-  seed = (seed | 0) + 1109;
-  randomSeed(seed);
-  noiseSeed(seed);
-  select("#seedReport").html("seed " + seed);
-  regenerateGrid();
-}
+let waves = [];
+let dugTiles = {};
+let treasureTiles = {};
+let currentI = 0;
+let currentJ = 0;
 
-function regenerateGrid() {
-  select("#asciiBox").value(gridToString(generateGrid(numCols, numRows)));
-  reparseGrid();
-}
-
-function reparseGrid() {
-  currentGrid = stringToGrid(select("#asciiBox").value());
-}
-
-function gridToString(grid) {
-  let rows = [];
-  for (let i = 0; i < grid.length; i++) {
-    rows.push(grid[i].join(""));
-  }
-  return rows.join("\n");
-}
-
-function stringToGrid(str) {
-  let grid = [];
-  let lines = str.split("\n");
-  for (let i = 0; i < lines.length; i++) {
-    let row = [];
-    let chars = lines[i].split("");
-    for (let j = 0; j < chars.length; j++) {
-      row.push(chars[j]);
-    }
-    grid.push(row);
-  }
-  return grid;
-}
-
-// setup() function is called once when the program starts
-function setup() {
-  // place our canvas, making it fit our container
-  canvasContainer = $("#canvas-container");
-  let canvas = createCanvas(canvasContainer.width(), canvasContainer.height());
-  canvas.parent("canvas-container");
-  // resize canvas is the page is resized
-
-  // create an instance of the class
-  myInstance = new MyClass("VALUE1", "VALUE2");
-
-  $(window).resize(function() {
-    resizeScreen();
-  });
-  resizeScreen();
-
-  numCols = select("#asciiBox").attribute("rows") | 0;
-  numRows = select("#asciiBox").attribute("cols") | 0;
-
-  createCanvas(16 * numCols, 16 * numRows).parent("canvasContainer");
-  select("canvas").elt.getContext("2d").imageSmoothingEnabled = false;
-
-  select("#reseedButton").mousePressed(reseed);
-  select("#asciiBox").input(reparseGrid);
-
-  reseed();
-}
-
-// draw() function is called repeatedly, it's the main animation loop
-function draw() {
-  background(220);    
-  // call a method on the instance
-  myInstance.myMethod();
-
-  randomSeed(seed);
-  drawGrid(currentGrid);
-}
-
-function placeTile(i, j, ti, tj) {
-  image(tilesetImage, 16 * j, 16 * i, 16, 16, 8 * ti, 8 * tj, 8, 8);
-}
-
-function gridCheck(grid, i, j, target) {
-  let inRange = (i >= 0 && i < grid.length && j >= 0 && j < grid[i].length);
-  if (inRange) {
-    return grid[i][j] == target;
-  }
-  else {return false;}
-}
-
-
-function gridCode(grid, i, j, target) {
-  let north = gridCheck(grid, i, j-1, target);
-  let west = gridCheck(grid, i-1, j, target);
-  let east = gridCheck(grid, i+1, j, target);
-  let south = gridCheck(grid, i, j+1, target);
+function p3_tileClicked(i, j) {
+  let key = `${i+1},${j+1}`;
+  let type = getTileType(i + 1, j + 1)
   
-  return ((north<<0) + (west<<1) + (east<<2) + (south<<3))
-}
-
-
-function drawContext(grid, i, j, target, ti, tj) {
-  const [tiOffset, tjOffset] = lookup[gridCode(grid, i, j, target)];
-  placeTile(i, j, ti + tiOffset, tj + tjOffset);
-}
-
-
-const lookup = [ 
-  [0,0],   // No Neighbors //ti11 tj1
-  [1,0],  // North
-  [0,1],  // West
-  [1,1],  // NW 
-  [0,-1],  // East
-  [1,-1],  // NE
-  [1,0],  // East + West
-  [1,0],  // E + N + W
-  [-1,0],  // South
-  [0,0],  // South + North
-  [-1,1],  // SW
-  [0,1],  // S + N + W
-  [-1,-1],  // SE
-  [0,-1],  // S + N + E
-  [-1,0],  // S + W + E
-  [0,0]  // All Neighbors
-];
-
-
-function generateGrid(numCols, numRows) {
-  let grid = [];
-  for (let i = 0; i < numRows; i++) {
-    let row = [];
-    for (let j = 0; j < numCols; j++) {
-      if (noise(i/20,j/20) < .26) {
-        row.push("w");
-      }
-      else if (noise(i/5,j/5) > .6) {
-        row.push(":");
-      }
-      else {row.push("_")}
-    }
-    grid.push(row);
+  dugTiles[key] = true;
+  if (random() < 0.1 && type != "lava" && type !="port") {
+    treasureTiles[key] = true;
   }
+}
+
+function p3_drawBefore() {
+  if (random() < 0.005) {
+    waves.push({
+      spawnTime: frameCount,
+      x: currentI - 50,
+      y: currentJ - 50,
+      speed: 0.015 + random(0.01),
+      noiseSeed: random(1000),
+      lifetime: 99999
+    });
+  }
+
+  waves = waves.filter(w => frameCount - w.spawnTime < w.lifetime);
+}
+
+function getTileType(i, j) {
+  let n = noise(i / 20, j / 20);
+  if (n < 0.68) return "lava";
+  if (n < 0.696) return "sand";
+  if (n < 0.6969) return "port";
+  return "path";
+}
+
+function p3_drawTile(i, j) {
+  noStroke();
+
+  let n = noise(i / 20, j / 20);
+
+  let path = color(255, 158, 23);
+  let sand = color(184, 107, 0);
+  let shadowSand = color(133, 77, 0);
+  let port = color(61, 58, 53);
+  let rock = color(80, 50, 0)
+  let shadowRock = color(66, 37, 0)
   
-  return grid;
-}
+  let key = `${i},${j}`;
+  let isDug = dugTiles[key];
+  let hasTreasure = treasureTiles[key];
 
-function drawGrid(grid) {
-  background(128);
-  let snowFall = random() < 0.2;
-  for(let i = 0; i < grid.length; i++) {
-    for(let j = 0; j < grid[i].length; j++) {
-      if (grid[i][j] == 'w') {
-        if (snowFall) {
-          placeTile(i, j, (random()*second())%2, 13);
-          drawContext(grid, i, j, 'w', 10, 13);
-        }
-        else{
-          placeTile(i, j, (random([0,0,0,1,2,3])*second()%4), 14)
-          drawContext(grid, i, j, 'w', 10, 1);
-        }
-      }
-      else {
-        if (snowFall) {
-          placeTile(i, j, (random()*second())%2, 12)
-          if (grid[i][j] == ':') {
-            placeTile(i, j, 21, 0)
-          }
-        }
-        else {
-          placeTile(i, j, (floor(random(4))), 0)
-          if (grid[i][j] == ':') {
-            placeTile(i, j, 15, 0)
-          }
-        }
+  if (n < 0.68) {
+    if (isDug) {
+      stroke(0, 0, 0, 85);
+      drawCube(rock, rock, shadowRock)
+      return
+    }
+    let time = millis() / 1000;
+    let shimmer = (sin(time * 2 + i * 0.1 + j * 0.1) + 1) / 2;
+    let baseColor = lerpColor(color(255, 185, 0), color(255, 206, 0), shimmer);
+    let waterColor = baseColor;
+    
+    stroke(255, 206, 0, 85);
+
+    let foamNeighbor = false;
+    for (let [di, dj] of [[-1,0],[1,0],[0,-1],[0,1]]) {
+      let neighborType = getTileType(i + di, j + dj);
+      if (neighborType !== "lava") {
+        foamNeighbor = true;
+        break;
       }
     }
+
+    if (foamNeighbor) {
+      let foamNoise = noise(i * 0.5, j * 0.5, time * 0.3);
+      let foamIntensity = map(foamNoise, 0, 1, 0.1, 0.5);
+      let foamColor = color(255, 144, 0);
+      waterColor = lerpColor(waterColor, foamColor, foamIntensity);
+    }
+
+    for (let wave of waves) {
+      let age = frameCount - wave.spawnTime;
+      let waveY = wave.y + age * wave.speed;
+      let xOffset = noise(i * 0.3, wave.noiseSeed + age * 0.01);
+      let jOffset = map(xOffset, 0, 1, -2, 2);
+      let waveJ = waveY + jOffset;
+
+      let dist = abs(j - waveJ);
+      if (dist < 1.2) {
+        let alpha = 1;
+        let fadeIn = 60;
+        let fadeOutStart = wave.lifetime - 100;
+        let fadeOutRange = 30;
+
+        if (age < fadeIn) {
+          alpha = age / fadeIn;
+        }
+
+        let currentY = wave.y + age * wave.speed;
+        if (currentY > fadeOutStart) {
+          alpha *= constrain(1 - (currentY - fadeOutStart) / fadeOutRange, 0, 1);
+        }
+
+        let intensity = map(dist, 0, 1.2, 0.4, 0) * alpha;
+        waterColor = lerpColor(waterColor, color(255, 69, 0), intensity);
+      }
+    }
+    drawSquare(waterColor);
+  } else if (n < .696) {
+    stroke(0, 0, 0, 30);
+    let base = sand;
+    if (isDug) base = lerpColor(sand, shadowRock, 0.5);
+    drawCube(base, sand, shadowSand);
+  } 
+  else if (n < .6969) {
+    stroke(0, 0, 0, 30);
+    let base = port;
+    drawCube(base, port, port);
+  } 
+  else {
+    stroke(0, 0, 0, 30);
+    let base = path;
+    if (isDug) base = lerpColor(path, shadowSand, 0.5);
+    drawCube(base, sand, shadowSand);
   }
+
+  if (hasTreasure) {
+    push();
+    fill(255, 215, 0);
+    stroke(80);
+    strokeWeight(1);
+    rectMode(CENTER);
+    rect(0, -th * 2.2, 8, 8, 2);
+    pop();
+  }
+}
+
+function drawSquare(RGB) {
+  push();
+  fill(RGB)
+  beginShape();
+  vertex(-tw, 0);
+  vertex(0, th);
+  vertex(tw, 0);
+  vertex(0, -th);
+  endShape(CLOSE);
+  pop()
+}
+
+function drawCube(RGB, RGB2 = RGB, RGB3 = RGB) {
+  push();
+  fill(RGB);
+  beginShape();
+  vertex(-tw, -2*th);
+  vertex(0, -th);
+  vertex(tw, -2*th);
+  vertex(0, -3*th);
+  endShape(CLOSE);
+  pop();
+  push();
+  fill(RGB2);
+  beginShape();
+  vertex(tw, 0);
+  vertex(tw, -2*th);
+  vertex(0, -th);
+  vertex(0, th);
+  endShape(CLOSE);
+  beginShape();
+  fill(RGB3);
+  vertex(-tw, 0);
+  vertex(-tw, -2*th);
+  vertex(0, -th);
+  vertex(0, th);
+  endShape(CLOSE);
+  pop()
+}
+
+function p3_drawSelectedTile(i, j) {
+  noFill();
+  stroke(0, 255, 0, 128);
+
+  beginShape();
+  vertex(-tw, 0);
+  vertex(0, th);
+  vertex(tw, 0);
+  vertex(0, -th);
+  endShape(CLOSE);
+
+  noStroke();
+  fill(0);
+  text("tile " + [i, j], 0, 0);
+  updatePos(i, j)
+}
+
+function updatePos(i = null, j = null) {
+  if (i != null) {
+    currentI = i;
+    currentJ = j;
+  }
+}
+
+function p3_drawAfter() {
 }
