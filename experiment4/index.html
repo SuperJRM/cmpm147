@@ -22,9 +22,8 @@
 
 	<!-- Link to javascript files - DEFER waits until all elements are rendered -->
     <script type="text/javascript" src="../js/site.js" DEFER></script>
-	<!-- Use me for a JavaScript OOP Project -->
+	<script type="text/javascript" src="./js/xxhash.min.js" defer></script>
 	<script type="text/javascript" src="./js/project.js" DEFER></script>
-	<!-- Use me for a p5.js project -->
 	<script type="text/javascript" src="./js/sketch.js" DEFER></script>
 </head>
 <body>
@@ -38,7 +37,13 @@
 				<div id="canvas-container">
 					<!-- canvas will be added here -->
 				</div>
-                <div class="fullscreen-box">
+                <div class="fullscreen-box instructions">
+                    <div>
+                        Arrow keys scroll. Clicking changes tiles.
+                    </div>
+                    <div>
+                        World seed: <input type="text" id="world-seed" value="xyzzy">
+                    </div>
                     <button id="fullscreen">Fullscreen</button>
                 </div>
 			</div>
